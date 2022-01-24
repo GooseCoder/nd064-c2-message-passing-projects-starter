@@ -1,0 +1,14 @@
+The Api Gateway serves as an access point to the rest of the services so no gRPC are exposed to the end user api
+
+Endpoints that interact with gRPC internally:
+POST http://localhost:30001/api/persons
+{
+    "first_name": "example_name",
+    "last_name": "example_last_name",
+    "company_name": "example_company"
+}
+
+GET http://localhost:30001/api/persons
+GET http://localhost:30001/api/persons/5
+GET http://localhost:30001/api/persons/5/connection
+

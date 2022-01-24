@@ -1,0 +1,52 @@
+Main Concerns:
+
+The use of location data in a mobile app, the platform should ingest this location 
+data and match it to persons data to create relationships between them. This kind of 
+data tends to accumulate very fast, so we should expect to process huge amount of data
+constantly
+
+Solution:
+
+Based on those concerns, I decided to divide the application into 4 different services 
+to be able to scale them later on individually, also a mesage queue system is integrated
+into the location service processes to decrease the processing time of some services, 
+these are the generated services:
+
+* Api Gateway
+* Connection service
+* Location service
+* Person Service
+
+And these are the message passing strategies used.
+
+REST Api Gateway
+I've made the decision to keep the same REST structure and transform the original 
+api into an api gateway to keep it compatible with the original frontend, however
+the internal communication is made using gRPC and a kafka cluster, since those services
+are connected thru this gateway we could use another set of technologies for inter-service
+communication.
+
+gRPC services
+Persons
+The Person service returns the list of persons or the data of a single person while this doesn't 
+necessarily require much server resources, it could need to scale in the future if a huge amount 
+of users is added to the platform, I've choose a fast protocol to minimize latency, gRPC, and it works 
+rather well, since the frontend is connected via the api-gateway this technology change shouldn't 
+affect the already exposed apis.
+
+Connection
+This internal services require a fast protocol to minimize latency because it should retrieve 
+data from 2 sources to return it to the api-gateway, on this case reliability and speed is an
+important concern, gRPC works well for this scenario because is a really fast, fairly reliable
+and future proof solution.
+
+Kafka cluster service
+Location
+Since the Location service is somewhat a resource intensive one, a shot and forget 
+solution like a message queue system could make possible to process a huge amount 
+of request without downtimes, since these systems are highly reliable and performant,
+since the is event-based and it process the data in the background, it will free 
+the api-gateway service of any further processing delegating this to the location service,
+so this is the best choice for this scenario, one drawback is the increased complexity 
+and costs, these are reasons why is not recommended to much simpler use cases.
+
